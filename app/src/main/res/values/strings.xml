@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Sensors</string>
+    <string name="name">Name:</string>
+    <string name="vender">Vender:</string>
+    <string name="version">Version:</string>
+    <string name="intType">Integer Type:</string>
+    <string name="stringType">String Type:</string>
+    <string name="maxRange">Max Range:</string>
+    <string name="resolution">Resolution:</string>
+    <string name="power">Power:</string>
+    <string name="minDelay">Min Delay:</string>
+</resources>
