@@ -1,6 +1,7 @@
 package com.example.wanshunq.sensors;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.hardware.Sensor;
 import android.support.annotation.DrawableRes;
 import android.support.v4.content.ContextCompat;
@@ -94,34 +95,94 @@ public class sensorAdapoer extends BaseAdapter{
         info8.setText(minDelay);
 
         final RelativeLayout line1=(RelativeLayout)view.findViewById(R.id.info1);
+        setBackground(holder.getInfo1(),line1);
         line1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 holder.changeInfo1();
-                if(holder.getInfo1()){
-                    line1.setBackgroundResource(R.drawable.border);
-                }
-                else {
-                    line1.setBackgroundResource(0);
-                }
+                setBackground(holder.getInfo1(),line1);
             }
         });
 
         final RelativeLayout line2=(RelativeLayout)view.findViewById(R.id.info2);
+        setBackground(holder.getInfo2(),line2);
         line2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 holder.changeInfo2();
-                if(holder.getInfo2()){
-                    line2.setBackgroundResource(R.drawable.border);
-                }
-                else {
-                    line2.setBackgroundResource(0);
-                }
+                setBackground(holder.getInfo2(),line2);
+            }
+        });
+
+        final RelativeLayout line3=(RelativeLayout)view.findViewById(R.id.info3);
+        setBackground(holder.getInfo3(),line3);
+        line3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                holder.changeInfo3();
+                setBackground(holder.getInfo3(),line3);
+            }
+        });
+
+        final RelativeLayout line4=(RelativeLayout)view.findViewById(R.id.info4);
+        setBackground(holder.getInfo4(),line4);
+        line4.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                holder.changeInfo4();
+                setBackground(holder.getInfo4(),line4);
+            }
+        });
+
+        final RelativeLayout line5=(RelativeLayout)view.findViewById(R.id.info5);
+        setBackground(holder.getInfo5(),line5);
+        line5.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                holder.changeInfo5();
+                setBackground(holder.getInfo5(),line5);
+            }
+        });
+
+        final RelativeLayout line6=(RelativeLayout)view.findViewById(R.id.info6);
+        setBackground(holder.getInfo6(),line6);
+        line6.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                holder.changeInfo6();
+                setBackground(holder.getInfo6(),line6);
+            }
+        });
+
+        final RelativeLayout line7=(RelativeLayout)view.findViewById(R.id.info7);
+        setBackground(holder.getInfo7(),line7);
+        line7.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                holder.changeInfo7();
+                setBackground(holder.getInfo7(),line7);
+            }
+        });
+
+        final RelativeLayout line8=(RelativeLayout)view.findViewById(R.id.info8);
+        setBackground(holder.getInfo8(),line8);
+        line8.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                holder.changeInfo8();
+                setBackground(holder.getInfo8(),line8);
             }
         });
 
         return view;
+    }
+
+    void setBackground(Boolean set,RelativeLayout layout){
+        if(set){
+            layout.setBackgroundColor(Color.parseColor("#BAE1FC"));
+        }else {
+            layout.setBackgroundColor(Color.TRANSPARENT);
+        }
     }
 
 
@@ -186,6 +247,20 @@ public class sensorAdapoer extends BaseAdapter{
         }
     }
 
+    public ArrayList<info_holder> getInfos(){
+        return new ArrayList<>(infos);
+    }
+
+    public ArrayList<Sensor> getSensors() {
+        return new ArrayList<>(sensors);
+    }
+
+    public void infoReset(){
+        for(int i=0;i<infos.size();i++){
+            infos.get(i).reset();
+        }
+    }
+
     class info_holder{
         boolean info1;
         boolean info2;
@@ -223,6 +298,17 @@ public class sensorAdapoer extends BaseAdapter{
             if(info7)toReturn.add(6);
             if(info8)toReturn.add(7);
             return toReturn;
+        }
+
+        public void reset(){
+            info1=false;
+            info2=false;
+            info3=false;
+            info4=false;
+            info5=false;
+            info6=false;
+            info7=false;
+            info8=false;
         }
 
         public boolean getInfo1(){

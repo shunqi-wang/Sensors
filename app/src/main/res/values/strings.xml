@@ -9,4 +9,6 @@
     <string name="resolution">Resolution:</string>
     <string name="power">Power:</string>
     <string name="minDelay">Min Delay:</string>
+    <string name="send">Send</string>
+    <string name="clear">Clear</string>
 </resources>
