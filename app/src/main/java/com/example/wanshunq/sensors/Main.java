@@ -42,7 +42,7 @@ public class Main extends AppCompatActivity implements View.OnClickListener{
             @Override
             public void onClick(View v) {
                 adapoer.infoReset();
-                startActivity(new Intent(getApplicationContext(),Main.class));
+                recreate();
             }
         });
     }
