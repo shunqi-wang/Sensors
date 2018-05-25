@@ -3,6 +3,7 @@ package com.example.wanshunq.sensors;
 import android.content.Context;
 import android.content.Intent;
 import android.hardware.Sensor;
+import android.hardware.SensorEvent;
 import android.hardware.SensorManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -20,7 +21,7 @@ import java.util.List;
 public class Main extends AppCompatActivity implements View.OnClickListener{
 
     private SensorManager manager;
-    private sensorAdapoer adapoer;
+    private sensorAdapter adapoer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,25 +32,25 @@ public class Main extends AppCompatActivity implements View.OnClickListener{
         List<Sensor> sensorList=manager.getSensorList(Sensor.TYPE_ALL);
 
         ListView sensors=(ListView)findViewById(R.id.sensor_list);
-        adapoer=new sensorAdapoer(this,sensorList);
+        adapoer=new sensorAdapter(this,sensorList,manager);
         sensors.setAdapter(adapoer);
 
-        Button Send=(Button)findViewById(R.id.send);
-        Send.setOnClickListener(this);
+        //Button Send=(Button)findViewById(R.id.send);
+        //Send.setOnClickListener(this);
 
-        Button Clear=(Button)findViewById(R.id.clear);
-        Clear.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                adapoer.infoReset();
-                recreate();
-            }
-        });
+        //Button Clear=(Button)findViewById(R.id.clear);
+//        Clear.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                adapoer.infoReset();
+//                recreate();
+//            }
+//        });
     }
 
     @Override
     public void onClick(View v) {
-        ArrayList<sensorAdapoer.info_holder> infos=adapoer.getInfos();
+        ArrayList<sensorAdapter.info_holder> infos=adapoer.getInfos();
         ArrayList<Sensor> sensors=adapoer.getSensors();
         JSONObject toSend=new JSONObject();
 
@@ -106,7 +107,7 @@ public class Main extends AppCompatActivity implements View.OnClickListener{
                     break;
             case 2: info=sensor.getType()+"";
                     break;
-            case 3: info=sensorAdapoer.sensorTypeToString(sensor.getType());
+            case 3: info=sensorAdapter.sensorTypeToString(sensor.getType());
                     break;
             case 4: info=sensor.getMaximumRange()+"";
                     break;

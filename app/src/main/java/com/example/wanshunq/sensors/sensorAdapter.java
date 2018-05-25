@@ -1,15 +1,22 @@
 package com.example.wanshunq.sensors;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.support.annotation.DrawableRes;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -21,17 +28,22 @@ import java.util.List;
  * Created by wsq96 on 2018/5/15.
  */
 
-public class sensorAdapoer extends BaseAdapter{
+public class sensorAdapter extends BaseAdapter{
     private Context context;
     private ArrayList<Sensor> sensors;
     private ArrayList<info_holder> infos=new ArrayList<>();
+    private SensorManager manager;
+    private ArrayList<Integer> numbers=new ArrayList<>();
 
-    public sensorAdapoer(Context context,List<Sensor> sensors){
+
+
+    public sensorAdapter(Context context,List<Sensor> sensors,SensorManager manager){
         this.context=context;
         this.sensors=new ArrayList<>(sensors);
         for(int i=0;i<sensors.size();i++){
-            infos.add(new info_holder());
+            numbers.add(0);
         }
+        this.manager=manager;
     }
 
     @Override
@@ -58,119 +70,21 @@ public class sensorAdapoer extends BaseAdapter{
         }
 
         final Sensor sensor=sensors.get(i);
-        final info_holder holder=infos.get(i);
 
-        TextView info1=(TextView)view.findViewById(R.id.name);
-        info1.setText(sensor.getName());
+        TextView name=(TextView)view.findViewById(R.id.name);
+        name.setText(sensor.getName());
 
-        TextView info2=(TextView)view.findViewById(R.id.vender);
-        info2.setText(sensor.getVendor());
+        TextView type=(TextView)view.findViewById(R.id.type);
+        final String sensor_type=sensorTypeToString(sensor.getType());
+        type.setText(sensor_type);
 
-        TextView info3=(TextView)view.findViewById(R.id.version);
-        String version=sensor.getVersion()+"";
-        info3.setText(version);
-
-        TextView info4=(TextView)view.findViewById(R.id.intType);
-        String intType=sensor.getType()+"";
-        info4.setText(intType);
-
-        TextView info9=(TextView)view.findViewById(R.id.stringType);
-        String stringType=sensorTypeToString(sensor.getType());
-        info9.setText(stringType);
-
-        TextView info5=(TextView)view.findViewById(R.id.maxRange);
-        String maxRange=sensor.getMaximumRange()+"";
-        info5.setText(maxRange);
-
-        TextView info6=(TextView)view.findViewById(R.id.resolution);
-        String resolution=sensor.getResolution()+"";
-        info6.setText(resolution);
-
-        TextView info7=(TextView)view.findViewById(R.id.power);
-        String power=sensor.getPower()+"";
-        info7.setText(power);
-
-        TextView info8=(TextView)view.findViewById(R.id.minDelay);
-        String minDelay=sensor.getMinDelay()+"";
-        info8.setText(minDelay);
-
-        final RelativeLayout line1=(RelativeLayout)view.findViewById(R.id.info1);
-        setBackground(holder.getInfo1(),line1);
-        line1.setOnClickListener(new View.OnClickListener() {
+        view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                holder.changeInfo1();
-                setBackground(holder.getInfo1(),line1);
-            }
-        });
-
-        final RelativeLayout line2=(RelativeLayout)view.findViewById(R.id.info2);
-        setBackground(holder.getInfo2(),line2);
-        line2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                holder.changeInfo2();
-                setBackground(holder.getInfo2(),line2);
-            }
-        });
-
-        final RelativeLayout line3=(RelativeLayout)view.findViewById(R.id.info3);
-        setBackground(holder.getInfo3(),line3);
-        line3.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                holder.changeInfo3();
-                setBackground(holder.getInfo3(),line3);
-            }
-        });
-
-        final RelativeLayout line4=(RelativeLayout)view.findViewById(R.id.info4);
-        setBackground(holder.getInfo4(),line4);
-        line4.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                holder.changeInfo4();
-                setBackground(holder.getInfo4(),line4);
-            }
-        });
-
-        final RelativeLayout line5=(RelativeLayout)view.findViewById(R.id.info5);
-        setBackground(holder.getInfo5(),line5);
-        line5.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                holder.changeInfo5();
-                setBackground(holder.getInfo5(),line5);
-            }
-        });
-
-        final RelativeLayout line6=(RelativeLayout)view.findViewById(R.id.info6);
-        setBackground(holder.getInfo6(),line6);
-        line6.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                holder.changeInfo6();
-                setBackground(holder.getInfo6(),line6);
-            }
-        });
-
-        final RelativeLayout line7=(RelativeLayout)view.findViewById(R.id.info7);
-        setBackground(holder.getInfo7(),line7);
-        line7.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                holder.changeInfo7();
-                setBackground(holder.getInfo7(),line7);
-            }
-        });
-
-        final RelativeLayout line8=(RelativeLayout)view.findViewById(R.id.info8);
-        setBackground(holder.getInfo8(),line8);
-        line8.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                holder.changeInfo8();
-                setBackground(holder.getInfo8(),line8);
+                Intent intent=new Intent(context,Value.class);
+                intent.putExtra("intType",sensor.getType());
+                intent.putExtra("stringType",sensor_type);
+                context.startActivity(intent);
             }
         });
 
