@@ -52,7 +52,7 @@ public class Value extends AppCompatActivity {
                 }
 
                 if(length==0){
-                    Toast.makeText(getApplicationContext(),"Please Select One Value!",Toast.LENGTH_LONG);
+                    Toast.makeText(getApplicationContext(),"Please Select One Value!",Toast.LENGTH_LONG).show();
                     return;
                 }
 

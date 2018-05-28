@@ -7,11 +7,14 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.Arrays;
 
 public class Info extends AppCompatActivity {
 
@@ -20,7 +23,7 @@ public class Info extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_info);
 
-        TextView first=(TextView)findViewById(R.id.sent_info);
+        final TextView first=(TextView)findViewById(R.id.sent_info);
 
         Bundle extras=getIntent().getExtras();
         int intType=extras.getInt("intType");
@@ -44,12 +47,14 @@ public class Info extends AppCompatActivity {
                     }catch (JSONException e){
                         e.printStackTrace();
                     }
-                    //////////////////
+                    first.setText(object.toString());
                 }
             }
 
             @Override
             public void onAccuracyChanged(Sensor sensor, int accuracy) {}
         };
+
+        manager.registerListener(listener,sensor,333333);
     }
 }
