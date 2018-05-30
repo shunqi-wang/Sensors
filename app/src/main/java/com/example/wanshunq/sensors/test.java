@@ -1,12 +1,26 @@
 package com.example.wanshunq.sensors;
 
-import java.util.Arrays;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
 
 public class test {
     public static void main(String[] args) {
-        int[] intArray=new int[]{1,2,3,4};
-        int[] dest=new int[2];
-        System.arraycopy(intArray,0,dest,0,2);
-        System.out.println(Arrays.toString(dest));
+        JSONObject names=null;
+        String content="";
+        try{
+            FileReader fr=new FileReader("Test.json");
+            BufferedReader br=new BufferedReader(fr);
+            String st;
+            while ((st=br.readLine())!=null){
+                content+=st;
+            }
+            names=new JSONObject(content);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        System.out.println(content);
     }
 }
