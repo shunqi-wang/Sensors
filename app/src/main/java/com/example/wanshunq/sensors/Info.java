@@ -9,6 +9,9 @@ import android.hardware.SensorManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.TypedValue;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.json.JSONArray;
@@ -20,6 +23,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Info extends AppCompatActivity {
@@ -29,13 +33,29 @@ public class Info extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_info);
 
-        final TextView first=(TextView)findViewById(R.id.sent_info);
+        final LinearLayout linearLayout=(LinearLayout)findViewById(R.id.sent_info);
 
         Bundle extras=getIntent().getExtras();
-        int intType=extras.getInt("intType");
-        final String stringType=extras.getString("stringType");
-        final int[] ia=extras.getIntArray("valueId");
+        final int[] ia=extras.getIntArray("select");
+        for(int i:ia){
+            TextView textView=new TextView(this);
+            textView.setLayoutParams(new LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT
+            ));
+            textView.setTextSize(TypedValue.COMPLEX_UNIT_SP,20);
+            linearLayout.addView(textView);
+        }
 
+        SensorManager manager=(SensorManager)getSystemService(Context.SENSOR_SERVICE);
+        final ArrayList<Sensor> sensors=new ArrayList<>(manager.getSensorList(Sensor.TYPE_ALL));
+        final ArrayList<Sensor> selected=new ArrayList<>();
+        final ArrayList<String> sensorNames=new ArrayList<>();
+
+        for(int i:ia){
+            Sensor sensor=sensors.get(i);
+            selected.add(sensor);
+            sensorNames.add(sensorAdapter.sensorTypeToString(sensor.getType()));
+        }
 
         JSONObject names=null;
         try{
@@ -57,35 +77,51 @@ public class Info extends AppCompatActivity {
 
         final JSONObject final_names=names;
 
-        SensorManager manager=(SensorManager)getSystemService(Context.SENSOR_SERVICE);
-        final Sensor sensor=manager.getSensorList(intType).get(0);
+        for(int j=0;j<ia.length;j++){
+            final int i=j;
+            SensorEventListener listener=new SensorEventListener() {
+                @Override
+                public void onSensorChanged(SensorEvent event) {
+                    if(event.sensor.equals(selected.get(i))){
+                        JSONArray array=new JSONArray();
+                        try{
+                            JSONArray nameArray=(JSONArray)final_names.get(sensorNames.get(i));
+                            Log.i("shunqi",nameArray.toString());
+                            Log.i("shunqi",Arrays.toString(event.values));
+                            for(int x=0;x<event.values.length;x++){
+                                if(nameArray==null){
+                                    array.put(new JSONObject().put(
+                                            "Unknown",event.values[x]
+                                    ));
+                                }else{
+                                    array.put(new JSONObject().put(
+                                            (String)nameArray.get(x),event.values[x]
+                                    ));
+                                }
+                            }
+                            JSONObject object=new JSONObject();
 
-        SensorEventListener listener=new SensorEventListener() {
-            @Override
-            public void onSensorChanged(SensorEvent event) {
-                if(event.sensor.equals(sensor)){
-                    JSONArray array=new JSONArray();
-                    try{
-                        JSONArray nameArray=(JSONArray)final_names.get(stringType);
-                        for(int i:ia){
-                            array.put(new JSONObject().put(
-                                    (String)nameArray.get(i),event.values[i]
-                            ));
+                            object.put(sensorNames.get(i),array);
+                            TextView text=(TextView)linearLayout.getChildAt(i);
+                            text.setText(object.toString());
+                        }catch (JSONException e){
+                            e.printStackTrace();
                         }
-                        JSONObject object=new JSONObject();
-
-                        object.put(stringType,array);
-                        first.setText(object.toString());
-                    }catch (JSONException e){
-                        e.printStackTrace();
                     }
                 }
+
+                @Override
+                public void onAccuracyChanged(Sensor sensor, int accuracy) {}
+            };
+
+            manager.registerListener(listener,selected.get(i),333333);
+        }
+
+        for(int i=0;i<linearLayout.getChildCount();i++){
+            TextView textView=(TextView)linearLayout.getChildAt(i);
+            if(textView.getText().equals("")){
+                textView.setText("No Data");
             }
-
-            @Override
-            public void onAccuracyChanged(Sensor sensor, int accuracy) {}
-        };
-
-        manager.registerListener(listener,sensor,333333);
+        }
     }
 }

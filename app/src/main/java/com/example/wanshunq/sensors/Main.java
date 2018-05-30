@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -32,92 +33,45 @@ public class Main extends AppCompatActivity implements View.OnClickListener{
         List<Sensor> sensorList=manager.getSensorList(Sensor.TYPE_ALL);
 
         ListView sensors=(ListView)findViewById(R.id.sensor_list);
-        adapoer=new sensorAdapter(this,sensorList,manager);
+        adapoer=new sensorAdapter(this,sensorList);
         sensors.setAdapter(adapoer);
 
-        //Button Send=(Button)findViewById(R.id.send);
-        //Send.setOnClickListener(this);
+        Button Send=(Button)findViewById(R.id.send);
+        Send.setOnClickListener(this);
 
-        //Button Clear=(Button)findViewById(R.id.clear);
-//        Clear.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                adapoer.infoReset();
-//                recreate();
-//            }
-//        });
+        Button Clear=(Button)findViewById(R.id.clear);
+        Clear.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                adapoer.reset();
+                recreate();
+            }
+        });
     }
 
     @Override
     public void onClick(View v) {
-        ArrayList<sensorAdapter.info_holder> infos=adapoer.getInfos();
-        ArrayList<Sensor> sensors=adapoer.getSensors();
-        JSONObject toSend=new JSONObject();
+        ArrayList<Boolean> ba=adapoer.getBa();
+        int length=0;
+        for(boolean b:ba){
+            if(b)length++;
+        }
 
-        for(int i=0;i<infos.size();i++){
-            if(infos.get(i).ContainsInfo()){
-                JSONObject tmp=new JSONObject();
-                ArrayList<Integer> ids=infos.get(i).getInfoId();
-                Sensor tmp_sensor=sensors.get(i);
-                try{
-                    for(int id:ids){
-                        tmp.put(getInfoName(id),getInfoWithID(id,tmp_sensor));
-                    }
-                    toSend.put(tmp_sensor.getName(),tmp);
-                }catch (JSONException e){
-                    e.printStackTrace();
-                }
+        if(length==0){
+            Toast.makeText(this,"Please select one sensor!",Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        int[] toSend=new int[length];
+        int pointer=0;
+        for(int i=0;i<ba.size();i++){
+            if(ba.get(i)){
+                toSend[pointer++]=i;
             }
         }
 
         Intent intent=new Intent(this, Info.class);
-        intent.putExtra("info",toSend.toString());
+        intent.putExtra("select",toSend);
         startActivity(intent);
-    }
-
-    public String getInfoName(int id){
-        String name="";
-        switch (id){
-            case 0: name="Vender";
-                break;
-            case 1: name="Version";
-                break;
-            case 2: name="Integer Type";
-                break;
-            case 3: name="String Type";
-                break;
-            case 4: name="Max Range";
-                break;
-            case 5: name="Resolution";
-                break;
-            case 6: name="Power";
-                break;
-            case 7: name="Min Delay";
-                break;
-        }
-        return name;
-    }
-
-    public String getInfoWithID(int id,Sensor sensor){
-        String info="";
-        switch (id){
-            case 0: info=sensor.getVendor();
-                    break;
-            case 1: info=sensor.getVersion()+"";
-                    break;
-            case 2: info=sensor.getType()+"";
-                    break;
-            case 3: info=sensorAdapter.sensorTypeToString(sensor.getType());
-                    break;
-            case 4: info=sensor.getMaximumRange()+"";
-                    break;
-            case 5: info=sensor.getResolution()+"";
-                    break;
-            case 6: info=sensor.getPower()+"";
-                    break;
-            case 7: info=sensor.getMinDelay()+"";
-                    break;
-        }
-        return info;
     }
 }

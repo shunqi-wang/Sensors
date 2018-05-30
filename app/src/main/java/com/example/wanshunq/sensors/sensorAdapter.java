@@ -31,19 +31,16 @@ import java.util.List;
 public class sensorAdapter extends BaseAdapter{
     private Context context;
     private ArrayList<Sensor> sensors;
-    private ArrayList<info_holder> infos=new ArrayList<>();
-    private SensorManager manager;
-    private ArrayList<Integer> numbers=new ArrayList<>();
+    private ArrayList<Boolean> ba=new ArrayList<>();
 
 
 
-    public sensorAdapter(Context context,List<Sensor> sensors,SensorManager manager){
+    public sensorAdapter(Context context,List<Sensor> sensors){
         this.context=context;
         this.sensors=new ArrayList<>(sensors);
         for(int i=0;i<sensors.size();i++){
-            numbers.add(0);
+            ba.add(false);
         }
-        this.manager=manager;
     }
 
     @Override
@@ -78,27 +75,38 @@ public class sensorAdapter extends BaseAdapter{
         final String sensor_type=sensorTypeToString(sensor.getType());
         type.setText(sensor_type);
 
+        if(ba.get(i)){
+            view.setBackgroundColor(Color.parseColor("#BAE1FC"));
+        }else{
+            view.setBackgroundColor(Color.TRANSPARENT);
+        }
+
+        final View thisView=view;
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent=new Intent(context,Value.class);
-                intent.putExtra("intType",sensor.getType());
-                intent.putExtra("stringType",sensor_type);
-                context.startActivity(intent);
+                if(ba.get(i)){
+                    ba.set(i,false);
+                    thisView.setBackgroundColor(Color.TRANSPARENT);
+                }else {
+                    ba.set(i,true);
+                    thisView.setBackgroundColor(Color.parseColor("#BAE1FC"));
+                }
             }
         });
 
         return view;
     }
 
-    void setBackground(Boolean set,RelativeLayout layout){
-        if(set){
-            layout.setBackgroundColor(Color.parseColor("#BAE1FC"));
-        }else {
-            layout.setBackgroundColor(Color.TRANSPARENT);
-        }
+    public ArrayList<Boolean> getBa(){
+        return new ArrayList<>(ba);
     }
 
+    public void reset(){
+        for(Boolean b:ba){
+            b=false;
+        }
+    }
 
     public static String sensorTypeToString(int type) {
         switch (type) {
@@ -161,132 +169,7 @@ public class sensorAdapter extends BaseAdapter{
         }
     }
 
-    public ArrayList<info_holder> getInfos(){
-        return new ArrayList<>(infos);
-    }
-
     public ArrayList<Sensor> getSensors() {
         return new ArrayList<>(sensors);
-    }
-
-    public void infoReset(){
-        for(int i=0;i<infos.size();i++){
-            infos.get(i).reset();
-        }
-    }
-
-    class info_holder{
-        boolean info1;
-        boolean info2;
-        boolean info3;
-        boolean info4;
-        boolean info5;
-        boolean info6;
-        boolean info7;
-        boolean info8;
-
-        public info_holder(){
-            info1=false;
-            info2=false;
-            info3=false;
-            info4=false;
-            info5=false;
-            info6=false;
-            info7=false;
-            info8=false;
-
-        }
-
-        public boolean ContainsInfo(){
-            return info1||info2||info3||info4||info5||info6||info7||info8;
-        }
-
-        public ArrayList<Integer> getInfoId(){
-            ArrayList<Integer> toReturn=new ArrayList<>();
-            if(info1)toReturn.add(0);
-            if(info2)toReturn.add(1);
-            if(info3)toReturn.add(2);
-            if(info4)toReturn.add(3);
-            if(info5)toReturn.add(4);
-            if(info6)toReturn.add(5);
-            if(info7)toReturn.add(6);
-            if(info8)toReturn.add(7);
-            return toReturn;
-        }
-
-        public void reset(){
-            info1=false;
-            info2=false;
-            info3=false;
-            info4=false;
-            info5=false;
-            info6=false;
-            info7=false;
-            info8=false;
-        }
-
-        public boolean getInfo1(){
-            return info1;
-        }
-        public void changeInfo1(){
-            if(info1)info1=false;
-            else info1=true;
-        }
-
-        public boolean getInfo2(){
-            return info2;
-        }
-        public void changeInfo2(){
-            if(info2)info2=false;
-            else info2=true;
-        }
-
-        public boolean getInfo3(){
-            return info3;
-        }
-        public void changeInfo3(){
-            if(info3)info3=false;
-            else info3=true;
-        }
-
-        public boolean getInfo4(){
-            return info4;
-        }
-        public void changeInfo4(){
-            if(info4)info4=false;
-            else info4=true;
-        }
-
-        public boolean getInfo5(){
-            return info5;
-        }
-        public void changeInfo5(){
-            if(info5)info5=false;
-            else info5=true;
-        }
-
-        public boolean getInfo6(){
-            return info6;
-        }
-        public void changeInfo6(){
-            if(info6)info6=false;
-            else info6=true;
-        }
-
-        public boolean getInfo7(){
-            return info7;
-        }
-        public void changeInfo7(){
-            if(info7)info7=false;
-            else info7=true;
-        }
-
-        public boolean getInfo8(){
-            return info8;
-        }
-        public void changeInfo8(){
-            if(info8)info8=false;
-            else info8=true;
-        }
     }
 }

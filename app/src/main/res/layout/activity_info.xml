@@ -6,10 +6,10 @@
     android:layout_height="match_parent"
     tools:context=".Info">
 
-    <TextView
+    <LinearLayout
         android:id="@+id/sent_info"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="15sp"/>
+        android:layout_height="match_parent"
+        android:orientation="vertical"/>
 
 </LinearLayout>
