@@ -91,5 +91,6 @@
         "x_bias",
         "y_bias",
         "z_bias"
-    ]
+    ],
+    "Step Counter":["step count"]
 }

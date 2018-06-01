@@ -1,18 +1,28 @@
 package com.example.wanshunq.sensors;
 
+import android.Manifest;
+import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.os.Build;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.KeyEvent;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -27,11 +37,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Info extends AppCompatActivity {
+    private static final int REQUEST_LOCATION=1;
+    long LOCATION_REFRESH_TIME=333;
+    float LOCATION_REFRESH_DISTANCE=1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_info);
+
+        ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                REQUEST_LOCATION);
 
         final LinearLayout linearLayout=(LinearLayout)findViewById(R.id.sent_info);
 
@@ -84,10 +100,15 @@ public class Info extends AppCompatActivity {
                 public void onSensorChanged(SensorEvent event) {
                     if(event.sensor.equals(selected.get(i))){
                         JSONArray array=new JSONArray();
+                        JSONArray nameArray=null;
                         try{
-                            JSONArray nameArray=(JSONArray)final_names.get(sensorNames.get(i));
+                            nameArray=(JSONArray)final_names.get(sensorNames.get(i));
                             Log.i("shunqi",nameArray.toString());
-                            Log.i("shunqi",Arrays.toString(event.values));
+                        }catch(JSONException e){
+                            e.printStackTrace();
+                            Log.i("shunqi","In Exception");
+                        }
+                        try{
                             for(int x=0;x<event.values.length;x++){
                                 if(nameArray==null){
                                     array.put(new JSONObject().put(
@@ -123,5 +144,54 @@ public class Info extends AppCompatActivity {
                 textView.setText("No Data");
             }
         }
+
+        final TextView locationText=(TextView)findViewById(R.id.location);
+
+        final LocationListener locationListener=new LocationListener() {
+            @Override
+            public void onLocationChanged(Location location) {
+                if(location!=null){
+                    String text="Latitude: "+location.getLatitude()
+                            +"\nLongitude: "+location.getLongitude();
+                    locationText.setText(text);
+                }else {
+                    Toast.makeText(getApplicationContext(),"Unable to get changing location",
+                            Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onStatusChanged(String provider, int status, Bundle extras) {}
+
+            @Override
+            public void onProviderEnabled(String provider) {}
+
+            @Override
+            public void onProviderDisabled(String provider) {}
+        };
+
+
+        LocationManager mLocationManager=(LocationManager)getSystemService(LOCATION_SERVICE);
+        if(checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)== PackageManager.PERMISSION_GRANTED){
+            Location location=mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+            if(location!=null){
+                String text="Latitude: "+location.getLatitude()
+                        +"\nLongitude: "+location.getLongitude();
+                locationText.setText(text);
+            }else {
+                Toast.makeText(this,"Unable to get location",Toast.LENGTH_LONG).show();
+            }
+
+            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,LOCATION_REFRESH_TIME,
+                    LOCATION_REFRESH_DISTANCE,locationListener);
+        }
+    }
+
+    @Override
+    public boolean onKeyDown(int key, KeyEvent event){
+        if(key==KeyEvent.KEYCODE_BACK){
+            finish();
+        }
+        return super.onKeyDown(key,event);
     }
 }
