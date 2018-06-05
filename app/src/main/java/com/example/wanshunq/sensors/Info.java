@@ -49,18 +49,9 @@ public class Info extends AppCompatActivity {
         ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                 REQUEST_LOCATION);
 
-        final LinearLayout linearLayout=(LinearLayout)findViewById(R.id.sent_info);
-
         Bundle extras=getIntent().getExtras();
         final int[] ia=extras.getIntArray("select");
-        for(int i:ia){
-            TextView textView=new TextView(this);
-            textView.setLayoutParams(new LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT
-            ));
-            textView.setTextSize(TypedValue.COMPLEX_UNIT_SP,20);
-            linearLayout.addView(textView);
-        }
+        final TextView textView=(TextView)findViewById(R.id.sent_info);
 
         SensorManager manager=(SensorManager)getSystemService(Context.SENSOR_SERVICE);
         final ArrayList<Sensor> sensors=new ArrayList<>(manager.getSensorList(Sensor.TYPE_ALL));
@@ -86,12 +77,13 @@ public class Info extends AppCompatActivity {
             }
             System.out.println(content);
             names=new JSONObject(content);
-
+            Log.i("shunqi",names.toString());
         }catch (Exception e){
             e.printStackTrace();
         }
 
         final JSONObject final_names=names;
+        final JSONObject object=new JSONObject();
 
         for(int j=0;j<ia.length;j++){
             final int i=j;
@@ -99,32 +91,23 @@ public class Info extends AppCompatActivity {
                 @Override
                 public void onSensorChanged(SensorEvent event) {
                     if(event.sensor.equals(selected.get(i))){
-                        JSONArray array=new JSONArray();
                         JSONArray nameArray=null;
                         try{
                             nameArray=(JSONArray)final_names.get(sensorNames.get(i));
-                            Log.i("shunqi",nameArray.toString());
                         }catch(JSONException e){
                             e.printStackTrace();
-                            Log.i("shunqi","In Exception");
                         }
                         try{
                             for(int x=0;x<event.values.length;x++){
+
                                 if(nameArray==null){
-                                    array.put(new JSONObject().put(
-                                            "Unknown",event.values[x]
-                                    ));
+                                    object.put(sensorNames.get(i)+"-unknown-key"+(x+1),event.values[x]);
                                 }else{
-                                    array.put(new JSONObject().put(
-                                            (String)nameArray.get(x),event.values[x]
-                                    ));
+                                    object.put(sensorNames.get(i)+"-"+(String)nameArray.get(x),event.values[x]);
                                 }
                             }
-                            JSONObject object=new JSONObject();
-
-                            object.put(sensorNames.get(i),array);
-                            TextView text=(TextView)linearLayout.getChildAt(i);
-                            text.setText(object.toString());
+                            Log.i("shunqi",object.toString());
+                            textView.setText(object.toString());
                         }catch (JSONException e){
                             e.printStackTrace();
                         }
@@ -138,12 +121,7 @@ public class Info extends AppCompatActivity {
             manager.registerListener(listener,selected.get(i),333333);
         }
 
-        for(int i=0;i<linearLayout.getChildCount();i++){
-            TextView textView=(TextView)linearLayout.getChildAt(i);
-            if(textView.getText().equals("")){
-                textView.setText("No Data");
-            }
-        }
+        //No data
 
         final TextView locationText=(TextView)findViewById(R.id.location);
 
@@ -175,6 +153,12 @@ public class Info extends AppCompatActivity {
         if(checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)== PackageManager.PERMISSION_GRANTED){
             Location location=mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
             if(location!=null){
+                try{
+                    object.put("Latitude",location.getLatitude());
+                    object.put("Longitude",location.getLongitude());
+                }catch (JSONException e){
+                    e.printStackTrace();
+                }
                 String text="Latitude: "+location.getLatitude()
                         +"\nLongitude: "+location.getLongitude();
                 locationText.setText(text);
